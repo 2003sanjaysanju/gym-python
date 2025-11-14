@@ -1,70 +1,76 @@
-# Gym Monitoring CLI
+# Gym Monitoring System
 
-A lightweight Python command-line tool for managing gym member admissions and tracking fee due dates.
+A Django web application for managing gym member admissions and tracking fee due dates.
 
 ## Features
 
-- Add new members with admission date and fee schedule.
-- Record payments and calculate next due dates automatically.
-- List members with status highlighting overdue fees.
-- Export member roster to CSV.
+- ✅ Web-based dashboard for easy access
+- ✅ Add new members with admission date and fee schedule
+- ✅ Record payments and calculate next due dates automatically
+- ✅ Search members by name or phone number
+- ✅ Filter members by payment status (overdue, due soon, all)
+- ✅ Dashboard statistics (total members, overdue, due soon)
+- ✅ Secure login authentication
+- ✅ Member limit: 5,000 members
+- ✅ Responsive design with modern UI
 
 ## Quick Start
 
+See [SETUP.md](SETUP.md) for detailed setup instructions.
+
+**Quick setup:**
 ```bash
-python -m venv .venv
+# Install python3-venv if needed
+sudo apt install python3.12-venv
+
+# Create and activate virtual environment
+python3 -m venv .venv
 source .venv/bin/activate
-pip install -e .
-gym-monitor --help
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py migrate
+
+# Start the server
+python manage.py runserver
 ```
 
-## Usage Examples
+Then open `http://127.0.0.1:8000/` in your browser.
 
-1. **Add a member**
-   ```bash
-   gym-monitor add-member \
-     --name "Jane Doe" \
-     --phone "+91-9876543210" \
-     --plan-months 3 \
-     --fee-amount 2500
-   ```
+## Login Credentials
 
-2. **Record a payment**
-   ```bash
-   gym-monitor record-payment --member-id 1 --amount 2500
-   ```
-
-3. **List members**
-   ```bash
-   gym-monitor list-members
-   ```
+- **Username:** `admin`
+- **Password:** `power25`
 
 ## Data Storage
 
-Data is stored locally in an SQLite database under `~/.local/share/gym-monitoring/gym.db`. You can override the location with the `--db` flag on any command.
-The default configuration supports up to 5,000 active member records at a time.
+Data is stored in an SQLite database (`db.sqlite3`) in the project root. The application supports up to 5,000 active member records.
 
-## Optional Browser Dashboard
+## Project Structure
 
-For a lightweight, standalone dashboard that runs entirely in the browser (no server required):
-
-1. Open `frontend/index.html` in any modern browser.
-2. Add members via the form; records are stored in the browser's `localStorage`.
-3. Use the dashboard to review upcoming or overdue fees and to record payments quickly.
-
-> The dashboard is front-end only and is not yet wired to the CLI/database. Keep using the CLI for authoritative records.
+```
+gym-monitoring/
+├── gym/              # Django app
+│   ├── models.py     # Member and Payment models
+│   ├── views.py      # View functions
+│   ├── forms.py      # Django forms
+│   ├── templates/    # HTML templates
+│   └── static/       # CSS and static assets
+├── gym_web/          # Django project settings
+├── manage.py         # Django management script
+└── requirements.txt  # Python dependencies
+```
 
 ## Development
 
-Run the formatter and tests:
-
-```bash
-pip install -r requirements-dev.txt
-pytest
-```
+The project uses Django 5.2+ and Python 3.9+.
 
 ## Roadmap
 
-- SMS reminders for upcoming dues.
-- Web dashboard for staff.
-- Attendance tracking integration.
+- SMS reminders for upcoming dues
+- Payment history reports
+- Export to CSV/Excel
+- Attendance tracking integration
+- Multi-user support with roles

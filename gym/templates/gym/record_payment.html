@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Payment - POWER HOUSE</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'gym/styles.css' %}">
+</head>
+<body>
+    <header class="page-header">
+        <div class="brand">
+            <img src="{% static 'gym/assets/logo.png' %}"
+                 onerror="this.onerror=null; this.src='{% static 'gym/assets/logo-placeholder.svg' %}';"
+                 alt="Power House Gym logo"
+                 class="brand-logo">
+            <div>
+                <h1>Record Payment</h1>
+                <p>Record payment for {{ member.name }}</p>
+            </div>
+        </div>
+        <nav class="actions">
+            <a class="action-button secondary" href="{% url 'dashboard' %}">Back to Dashboard</a>
+            <a class="action-button subtle" href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="panel">
+            <h2>Payment Details</h2>
+            <p><strong>Member:</strong> {{ member.name }}</p>
+            <p><strong>Current Next Due Date:</strong> {{ member.next_due_date }}</p>
+            
+            <form method="post" class="form-grid">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="primary">Record Payment</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
+

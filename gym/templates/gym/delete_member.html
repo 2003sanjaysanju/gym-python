@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Member - POWER HOUSE</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'gym/styles.css' %}">
+</head>
+<body>
+    <header class="page-header">
+        <div class="brand">
+            <img src="{% static 'gym/assets/logo.png' %}"
+                 onerror="this.onerror=null; this.src='{% static 'gym/assets/logo-placeholder.svg' %}';"
+                 alt="Power House Gym logo"
+                 class="brand-logo">
+            <div>
+                <h1>Delete Member</h1>
+                <p>Confirm deletion of {{ member.name }}</p>
+            </div>
+        </div>
+        <nav class="actions">
+            <a class="action-button secondary" href="{% url 'dashboard' %}">Cancel</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="panel">
+            <h2>Confirm Deletion</h2>
+            <p>Are you sure you want to delete member <strong>{{ member.name }}</strong>?</p>
+            <p>This action cannot be undone.</p>
+            
+            <form method="post" style="margin-top: 1.5rem;">
+                {% csrf_token %}
+                <button type="submit" class="primary" style="background: var(--danger);">Delete Member</button>
+                <a href="{% url 'dashboard' %}" class="action-button secondary" style="margin-left: 1rem;">Cancel</a>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
+

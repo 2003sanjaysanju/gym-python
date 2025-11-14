@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POWER HOUSE</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'gym/styles.css' %}">
+</head>
+<body>
+    <header class="page-header">
+        <div class="brand">
+            <img src="{% static 'gym/assets/logo.png' %}"
+                 onerror="this.onerror=null; this.src='{% static 'gym/assets/logo-placeholder.svg' %}';"
+                 alt="Power House Gym logo"
+                 class="brand-logo">
+            <div>
+                <h1>POWER HOUSE Monitoring Dashboard</h1>
+                <p>Track member admissions, fee plans, and upcoming payments.</p>
+            </div>
+        </div>
+        <nav class="actions">
+            <a class="action-button" href="{% url 'add_member' %}">Add Member</a>
+            <a class="action-button secondary" href="#members-table">View Members</a>
+            <a class="action-button subtle" href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background: {% if message.tags == 'error' %}rgba(220, 38, 38, 0.1){% else %}rgba(34, 197, 94, 0.1){% endif %}; color: {% if message.tags == 'error' %}var(--danger){% else %}#047857{% endif %}; padding: 1rem; margin: 1rem 2rem; border-radius: 0.75rem; border: 1px solid {% if message.tags == 'error' %}rgba(220, 38, 38, 0.3){% else %}rgba(34, 197, 94, 0.3){% endif %};">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <section class="cards" id="summary">
+            <article class="card">
+                <h2>Total Members</h2>
+                <p id="summary-total">{{ total_members }}</p>
+            </article>
+            <article class="card warning">
+                <h2>Due Soon</h2>
+                <p id="summary-due-soon">{{ due_soon_count }}</p>
+            </article>
+            <article class="card danger">
+                <h2>Overdue</h2>
+                <p id="summary-overdue">{{ overdue_count }}</p>
+            </article>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Members</h2>
+                <div class="filters">
+                    <form method="get" action="{% url 'dashboard' %}" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                        <label class="search-field">
+                            <span class="visually-hidden">Search members</span>
+                            <input
+                                type="search"
+                                name="search"
+                                placeholder="Search name or phone"
+                                value="{{ search_query }}"
+                                autocomplete="off"
+                            >
+                        </label>
+                        <label>
+                            Show
+                            <select name="status" onchange="this.form.submit()">
+                                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All</option>
+                                <option value="due-soon" {% if status_filter == 'due-soon' %}selected{% endif %}>Due soon</option>
+                                <option value="overdue" {% if status_filter == 'overdue' %}selected{% endif %}>Overdue</option>
+                            </select>
+                        </label>
+                        {% if search_query or status_filter != 'all' %}
+                            <a href="{% url 'dashboard' %}" class="action-button subtle">Clear Filters</a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table id="members-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Admission</th>
+                            <th>Plan (months)</th>
+                            <th>Fee</th>
+                            <th>Next Due</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in members %}
+                            <tr>
+                                <td>{{ member.id }}</td>
+                                <td>{{ member.name }}</td>
+                                <td>{{ member.phone|default:"-" }}</td>
+                                <td>{{ member.admission_date }}</td>
+                                <td>{{ member.plan_months }}</td>
+                                <td>₹{{ member.fee_amount|floatformat:2 }}</td>
+                                <td>{{ member.next_due_date }}</td>
+                                <td>
+                                    <span class="status {{ member.get_status.code }}">
+                                        {{ member.get_status.label }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'record_payment' member.id %}" class="link" style="color: var(--accent); text-decoration: none; font-weight: 600;">Record Payment</a>
+                                    <form method="post" action="{% url 'delete_member' member.id %}" style="display: inline;" onsubmit="return confirm('Delete {{ member.name }}?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="link danger" style="border: none; background: none; color: var(--danger); cursor: pointer; font-weight: 600;">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="9" style="text-align: center; padding: 2rem; color: var(--text-light);">
+                                    No members found. <a href="{% url 'add_member' %}">Add one now</a>.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="page-footer">
+        <p>Gym Monitoring System - Powered by Django</p>
+    </footer>
+</body>
+</html>
+
